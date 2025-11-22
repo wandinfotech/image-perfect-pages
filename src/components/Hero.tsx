@@ -23,42 +23,67 @@ const Hero = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero text animation with stagger
-      gsap.from(textRef.current?.children || [], {
-        y: 50,
+      const tl = gsap.timeline();
+
+      // Animate each text element separately for more granular control
+      const badge = textRef.current?.querySelector('.badge-section');
+      const heading = textRef.current?.querySelector('h1');
+      const headingLines = heading?.querySelectorAll('div, span');
+      const description = textRef.current?.querySelector('p');
+
+      // Badge with profile images
+      tl.from(badge, {
+        x: -30,
         opacity: 0,
-        duration: 1,
-        stagger: 0.2,
+        duration: 0.8,
         ease: "power3.out",
       });
 
-      // Image animation
-      gsap.from(imageRef.current, {
-        scale: 0.8,
-        opacity: 0,
-        duration: 1.2,
-        ease: "back.out(1.7)",
-        delay: 0.3,
-      });
+      // Heading lines stagger
+      if (headingLines) {
+        tl.from(headingLines, {
+          y: 60,
+          opacity: 0,
+          duration: 0.9,
+          stagger: 0.15,
+          ease: "power3.out",
+        }, "-=0.4");
+      }
 
-      // Buttons animation
-      gsap.from(buttonsRef.current?.children || [], {
+      // Description
+      tl.from(description, {
         y: 30,
         opacity: 0,
         duration: 0.8,
-        stagger: 0.15,
         ease: "power2.out",
-        delay: 0.8,
-      });
+      }, "-=0.3");
 
-      // Scroll indicator animation
-      gsap.from(scrollRef.current, {
-        y: -20,
+      // Buttons with stagger
+      tl.from(buttonsRef.current?.children || [], {
+        y: 30,
+        opacity: 0,
+        scale: 0.9,
+        duration: 0.7,
+        stagger: 0.15,
+        ease: "back.out(1.4)",
+      }, "-=0.2");
+
+      // Image animation with rotation
+      tl.from(imageRef.current, {
+        scale: 0.7,
+        opacity: 0,
+        rotation: -10,
+        duration: 1.3,
+        ease: "back.out(1.5)",
+      }, "-=0.8");
+
+      // Scroll indicator entrance
+      tl.from(scrollRef.current, {
+        y: -30,
         opacity: 0,
         duration: 1,
-        delay: 1.2,
         ease: "power2.out",
-      });
+      }, "-=0.5");
 
       // Continuous float animation for scroll indicator
       gsap.to(scrollRef.current, {
@@ -69,14 +94,27 @@ const Hero = () => {
         ease: "power1.inOut",
       });
 
-      // Image rotation on hover effect
+      // SVG wave animations in scroll indicator
+      const waves = scrollRef.current?.querySelectorAll('svg');
+      waves?.forEach((wave, index) => {
+        gsap.to(wave, {
+          opacity: 0.5,
+          duration: 2,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: index * 0.3,
+        });
+      });
+
+      // Image hover effect
       const imageElement = imageRef.current?.querySelector('img');
       if (imageElement) {
         imageElement.addEventListener('mouseenter', () => {
           gsap.to(imageElement, {
-            scale: 1.05,
+            scale: 1.08,
             rotation: 5,
-            duration: 0.3,
+            duration: 0.4,
             ease: "power2.out",
           });
         });
@@ -84,9 +122,22 @@ const Hero = () => {
           gsap.to(imageElement, {
             scale: 1,
             rotation: 0,
-            duration: 0.3,
+            duration: 0.4,
             ease: "power2.out",
           });
+        });
+      }
+
+      // Profile images individual animations
+      const profileImages = badge?.querySelectorAll('.profile-image');
+      if (profileImages) {
+        gsap.from(profileImages, {
+          scale: 0,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "back.out(2)",
+          delay: 0.3,
         });
       }
     }, heroRef);
@@ -99,23 +150,23 @@ const Hero = () => {
       <div className='container mx-auto px-6'>
         <div className='grid lg:grid-cols-2 gap-12 items-center'>
           <div ref={textRef} className='text-left space-y-6'>
-            <div className='inline-flex items-center gap-2 text-sm text-muted-foreground'>
+            <div className='badge-section inline-flex items-center gap-2 text-sm text-muted-foreground'>
              <div className="flex items-center">
-  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white">
+  <div className="profile-image w-8 h-8 rounded-full overflow-hidden border-2 border-white">
     <img
       src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&fit=crop"
       className="w-full h-full object-cover"
     />
   </div>
 
-  <div className="-ml-3 w-8 h-8 rounded-full overflow-hidden border-2 border-white">
+  <div className="profile-image -ml-3 w-8 h-8 rounded-full overflow-hidden border-2 border-white">
     <img
       src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&fit=crop"
       className="w-full h-full object-cover"
     />
   </div>
 
-  <div className="-ml-3 w-8 h-8 rounded-full overflow-hidden border-2 border-white">
+  <div className="profile-image -ml-3 w-8 h-8 rounded-full overflow-hidden border-2 border-white">
     <img
       src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=100&fit=crop"
       className="w-full h-full object-cover"
