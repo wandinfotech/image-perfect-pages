@@ -25,65 +25,123 @@ const Hero = () => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
 
-      // Animate each text element separately for more granular control
+      // Badge with profile images - POP effect
       const badge = textRef.current?.querySelector('.badge-section');
-      const heading = textRef.current?.querySelector('h1');
-      const headingLines = heading?.querySelectorAll('div, span');
-      const description = textRef.current?.querySelector('p');
-
-      // Badge with profile images
       tl.from(badge, {
-        x: -30,
+        scale: 0,
         opacity: 0,
+        rotation: -45,
         duration: 0.8,
-        ease: "power3.out",
+        ease: "elastic.out(1, 0.5)",
       });
 
-      // Heading lines stagger
-      if (headingLines) {
-        tl.from(headingLines, {
-          y: 60,
+      // Profile images - cascade pop
+      const profileImages = badge?.querySelectorAll('.profile-image');
+      if (profileImages) {
+        tl.from(profileImages, {
+          scale: 0,
           opacity: 0,
-          duration: 0.9,
-          stagger: 0.15,
-          ease: "power3.out",
+          rotation: 360,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "back.out(3)",
         }, "-=0.4");
       }
 
-      // Description
-      tl.from(description, {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out",
-      }, "-=0.3");
+      // Split heading into words for pop animation
+      const heading = textRef.current?.querySelector('h1');
+      if (heading) {
+        const words = heading.innerText.split(' ');
+        heading.innerHTML = words.map(word => `<span class="word-pop inline-block">${word}</span>`).join(' ');
+        
+        const wordElements = heading.querySelectorAll('.word-pop');
+        tl.from(wordElements, {
+          y: 100,
+          opacity: 0,
+          rotationX: -90,
+          transformOrigin: "50% 50%",
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "back.out(2)",
+        }, "-=0.3");
+      }
 
-      // Buttons with stagger
+      // Description - letter by letter reveal
+      const description = textRef.current?.querySelector('p');
+      if (description) {
+        const letters = description.innerText.split('');
+        description.innerHTML = letters.map(letter => 
+          letter === ' ' ? ' ' : `<span class="letter-pop inline-block">${letter}</span>`
+        ).join('');
+        
+        const letterElements = description.querySelectorAll('.letter-pop');
+        tl.from(letterElements, {
+          opacity: 0,
+          y: 20,
+          rotationY: 90,
+          duration: 0.03,
+          stagger: 0.01,
+          ease: "power2.out",
+        }, "-=0.5");
+      }
+
+      // Buttons - bounce and rotate in
       tl.from(buttonsRef.current?.children || [], {
-        y: 30,
+        y: 50,
         opacity: 0,
-        scale: 0.9,
-        duration: 0.7,
-        stagger: 0.15,
-        ease: "back.out(1.4)",
-      }, "-=0.2");
+        scale: 0,
+        rotation: 180,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "elastic.out(1, 0.6)",
+      }, "-=0.4");
 
-      // Image animation with rotation
+      // Image - WHEEL ROTATION effect
       tl.from(imageRef.current, {
-        scale: 0.7,
+        scale: 0.3,
         opacity: 0,
-        rotation: -10,
-        duration: 1.3,
-        ease: "back.out(1.5)",
-      }, "-=0.8");
+        rotation: 720,
+        duration: 2,
+        ease: "power4.out",
+      }, "-=1.2");
 
-      // Scroll indicator entrance
+      // Continuous rotation for image
+      const imageElement = imageRef.current?.querySelector('img');
+      if (imageElement) {
+        gsap.to(imageElement, {
+          rotation: 360,
+          duration: 20,
+          repeat: -1,
+          ease: "none",
+        });
+
+        // Image hover - speed up rotation
+        imageElement.addEventListener('mouseenter', () => {
+          gsap.to(imageElement, {
+            rotation: "+=360",
+            scale: 1.15,
+            duration: 1,
+            ease: "power2.out",
+          });
+        });
+        imageElement.addEventListener('mouseleave', () => {
+          gsap.to(imageElement, {
+            scale: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        });
+      }
+
+      // Scroll indicator - 3D flip in
       tl.from(scrollRef.current, {
-        y: -30,
+        y: -50,
         opacity: 0,
-        duration: 1,
-        ease: "power2.out",
-      }, "-=0.5");
+        rotationX: -180,
+        transformPerspective: 1000,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+      }, "-=1");
 
       // Continuous float animation for scroll indicator
       gsap.to(scrollRef.current, {
@@ -94,11 +152,12 @@ const Hero = () => {
         ease: "power1.inOut",
       });
 
-      // SVG wave animations in scroll indicator
+      // SVG wave animations - pulse effect
       const waves = scrollRef.current?.querySelectorAll('svg');
       waves?.forEach((wave, index) => {
         gsap.to(wave, {
           opacity: 0.5,
+          scale: 1.1,
           duration: 2,
           repeat: -1,
           yoyo: true,
@@ -106,40 +165,6 @@ const Hero = () => {
           delay: index * 0.3,
         });
       });
-
-      // Image hover effect
-      const imageElement = imageRef.current?.querySelector('img');
-      if (imageElement) {
-        imageElement.addEventListener('mouseenter', () => {
-          gsap.to(imageElement, {
-            scale: 1.08,
-            rotation: 5,
-            duration: 0.4,
-            ease: "power2.out",
-          });
-        });
-        imageElement.addEventListener('mouseleave', () => {
-          gsap.to(imageElement, {
-            scale: 1,
-            rotation: 0,
-            duration: 0.4,
-            ease: "power2.out",
-          });
-        });
-      }
-
-      // Profile images individual animations
-      const profileImages = badge?.querySelectorAll('.profile-image');
-      if (profileImages) {
-        gsap.from(profileImages, {
-          scale: 0,
-          opacity: 0,
-          duration: 0.5,
-          stagger: 0.1,
-          ease: "back.out(2)",
-          delay: 0.3,
-        });
-      }
     }, heroRef);
 
     return () => ctx.revert();

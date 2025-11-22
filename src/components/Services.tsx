@@ -49,36 +49,55 @@ const Services = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading subtitle animation
-      const subtitle = headingRef.current?.querySelector('.subtitle');
+      // Heading subtitle - letter pop animation
+      const subtitle = headingRef.current?.querySelector('.subtitle') as HTMLElement;
+      if (subtitle) {
+        const letters = subtitle.innerText.split('');
+        subtitle.innerHTML = letters.map(letter => 
+          letter === ' ' ? ' ' : `<span class="inline-block">${letter}</span>`
+        ).join('');
+        
+        gsap.from(subtitle.querySelectorAll('span'), {
+          scrollTrigger: {
+            trigger: headingRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          opacity: 0,
+          y: -30,
+          rotationX: -90,
+          stagger: 0.03,
+          duration: 0.5,
+          ease: "back.out(2)",
+        });
+      }
+
+      // Title - word explosion effect
       const title = headingRef.current?.querySelector('h2');
+      if (title) {
+        const words = title.innerHTML.split(' ');
+        title.innerHTML = words.map(word => 
+          `<span class="inline-block" style="perspective: 1000px;">${word}</span>`
+        ).join(' ');
+        
+        gsap.from(title.querySelectorAll('span'), {
+          scrollTrigger: {
+            trigger: headingRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          opacity: 0,
+          scale: 0,
+          rotation: () => Math.random() * 360,
+          x: () => (Math.random() - 0.5) * 200,
+          y: () => (Math.random() - 0.5) * 200,
+          stagger: 0.05,
+          duration: 0.8,
+          ease: "back.out(1.5)",
+        });
+      }
 
-      gsap.from(subtitle, {
-        scrollTrigger: {
-          trigger: headingRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power3.out",
-      });
-
-      gsap.from(title, {
-        scrollTrigger: {
-          trigger: headingRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        delay: 0.2,
-      });
-
-      // Enhanced cards animation with individual element animations
+      // SHUFFLE & ROTATE CARD REVEAL
       const cards = cardsRef.current?.querySelectorAll('.service-card');
       cards?.forEach((card, index) => {
         const icon = card.querySelector('.service-icon');
@@ -86,22 +105,28 @@ const Services = () => {
         const description = card.querySelector('.service-description');
         const button = card.querySelector('.service-button');
 
-        // Card entrance
+        // Card shuffle entrance - random positions converging
+        const randomX = (Math.random() - 0.5) * 400;
+        const randomY = (Math.random() - 0.5) * 400;
+        const randomRotation = (Math.random() - 0.5) * 180;
+        
         gsap.from(card, {
           scrollTrigger: {
             trigger: card,
             start: "top 85%",
             toggleActions: "play none none reverse",
           },
-          y: 100,
+          x: randomX,
+          y: randomY,
+          rotation: randomRotation,
           opacity: 0,
-          scale: 0.9,
-          duration: 0.8,
+          scale: 0.3,
+          duration: 1.2,
           ease: "power3.out",
           delay: index * 0.1,
         });
 
-        // Icon animation
+        // Icon - wheel spin effect
         gsap.from(icon, {
           scrollTrigger: {
             trigger: card,
@@ -109,42 +134,62 @@ const Services = () => {
             toggleActions: "play none none reverse",
           },
           scale: 0,
-          rotation: -180,
+          rotation: 720,
           opacity: 0,
-          duration: 0.8,
-          ease: "back.out(1.7)",
+          duration: 1.5,
+          ease: "elastic.out(1, 0.5)",
           delay: index * 0.1 + 0.3,
         });
 
-        // Title animation
-        gsap.from(title, {
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-          x: -30,
-          opacity: 0,
-          duration: 0.6,
-          ease: "power2.out",
-          delay: index * 0.1 + 0.4,
-        });
+        // Title - split and pop
+        if (title) {
+          const titleEl = title as HTMLElement;
+          const chars = titleEl.innerText.split('');
+          titleEl.innerHTML = chars.map(char => 
+            char === ' ' ? ' ' : `<span class="inline-block">${char}</span>`
+          ).join('');
+          
+          gsap.from(titleEl.querySelectorAll('span'), {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+            opacity: 0,
+            y: 50,
+            rotationY: 180,
+            stagger: 0.02,
+            duration: 0.5,
+            ease: "back.out(2)",
+            delay: index * 0.1 + 0.5,
+          });
+        }
 
-        // Description animation
-        gsap.from(description, {
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-          y: 20,
-          opacity: 0,
-          duration: 0.6,
-          ease: "power2.out",
-          delay: index * 0.1 + 0.5,
-        });
+        // Description - wave reveal
+        if (description) {
+          const descEl = description as HTMLElement;
+          const words = descEl.innerText.split(' ');
+          descEl.innerHTML = words.map(word => 
+            `<span class="inline-block">${word}</span>`
+          ).join(' ');
+          
+          gsap.from(descEl.querySelectorAll('span'), {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+            opacity: 0,
+            y: 30,
+            rotationX: -45,
+            stagger: 0.02,
+            duration: 0.4,
+            ease: "power2.out",
+            delay: index * 0.1 + 0.7,
+          });
+        }
 
-        // Button animation
+        // Button - bounce explosion
         gsap.from(button, {
           scrollTrigger: {
             trigger: card,
@@ -152,24 +197,27 @@ const Services = () => {
             toggleActions: "play none none reverse",
           },
           scale: 0,
+          rotation: 360,
           opacity: 0,
-          duration: 0.5,
-          ease: "back.out(2)",
-          delay: index * 0.1 + 0.6,
+          duration: 0.8,
+          ease: "elastic.out(1, 0.6)",
+          delay: index * 0.1 + 0.9,
         });
 
-        // Card hover animations
+        // Card hover - 3D tilt and rotate
         card.addEventListener('mouseenter', () => {
           gsap.to(card, {
-            y: -15,
-            scale: 1.03,
+            y: -20,
+            scale: 1.05,
+            rotationY: 5,
+            rotationX: 5,
             duration: 0.4,
             ease: "power2.out",
           });
           gsap.to(icon, {
-            scale: 1.1,
-            rotation: 10,
-            duration: 0.3,
+            scale: 1.2,
+            rotation: 360,
+            duration: 0.6,
             ease: "power2.out",
           });
         });
@@ -178,19 +226,21 @@ const Services = () => {
           gsap.to(card, {
             y: 0,
             scale: 1,
+            rotationY: 0,
+            rotationX: 0,
             duration: 0.4,
             ease: "power2.out",
           });
           gsap.to(icon, {
             scale: 1,
             rotation: 0,
-            duration: 0.3,
+            duration: 0.4,
             ease: "power2.out",
           });
         });
       });
 
-      // Bottom text animation
+      // Bottom text - typewriter + pop effect
       const bottomText = sectionRef.current?.querySelector('.bottom-text');
       if (bottomText) {
         gsap.from(bottomText, {
@@ -199,10 +249,11 @@ const Services = () => {
             start: "top 90%",
             toggleActions: "play none none reverse",
           },
-          y: 30,
           opacity: 0,
+          scale: 0.8,
+          rotationX: -45,
           duration: 0.8,
-          ease: "power2.out",
+          ease: "back.out(1.7)",
         });
       }
     }, sectionRef);
