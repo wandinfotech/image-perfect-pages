@@ -2,18 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { GraduationCap, Briefcase, Plane, Building } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import start_icon from '../assets/service_icon1.png'
+import hover from '../assets/service_icon-removebg.png'
 
 const Services = () => {
   const services = [
     {
-      icon: GraduationCap,
+      icon: start_icon,
       title: "Student Visa",
       description: "From study and work visas to business and travel permits – we make global movement simple, secure, and stress-free.",
       color: "bg-secondary",
       iconColor: "text-primary",
     },
     {
-      icon: Briefcase,
+      icon: hover,
       title: "Business Visa",
       description: "From study and work visas to business and travel permits – we make global movement simple, secure, and stress-free.",
       color: "bg-primary",
@@ -21,14 +23,14 @@ const Services = () => {
       featured: true,
     },
     {
-      icon: Building,
+      icon: start_icon,
       title: "Working Visa",
       description: "From study and work visas to business and travel permits – we make global movement simple, secure, and stress-free.",
       color: "bg-background",
       iconColor: "text-primary",
     },
     {
-      icon: Plane,
+      icon: start_icon,
       title: "Tourist Visa",
       description: "From study and work visas to business and travel permits – we make global movement simple, secure, and stress-free.",
       color: "bg-background",
@@ -58,8 +60,8 @@ const Services = () => {
               }`}
             >
               <CardContent className="p-8 space-y-6">
-                <div className={`w-14 h-14 rounded-full ${service.featured ? 'bg-white/20' : 'bg-primary/10'} flex items-center justify-center`}>
-                  <service.icon className={`w-7 h-7 ${service.iconColor}`} />
+                <div className={`w-14 h-14 flex items-center justify-center`}>
+                  <img src={service.icon} alt={service.title}  />
                 </div>
 
                 <div className="space-y-3">

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import logo from '../assets/logo_m.png'
 
 const Header = () => {
   return (
@@ -6,10 +7,7 @@ const Header = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-white font-bold text-lg">V</span>
-            </div>
-            <span className="font-semibold text-lg text-foreground">Vizayura Consultant</span>
+            <img src={logo} alt="logo" style={{ width: "120px", height: "auto" }} />
           </div>
           
           <nav className="hidden md:flex items-center gap-8">
@@ -28,11 +26,12 @@ const Header = () => {
             <a href="#contact" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               contact us
             </a>
-          </nav>
-
-          <Button className="rounded-full bg-primary hover:bg-primary/90 text-white px-6">
+            <Button className="rounded-full bg-primary hover:bg-primary/90 text-white px-6">
             Get An Appointment
           </Button>
+          </nav>
+
+          
         </div>
 
         <div className="mt-4 flex gap-6 text-sm font-medium border-t border-border pt-4">
