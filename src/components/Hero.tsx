@@ -1,8 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import mainImage from "../assets/Capture_m1.png";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 const Hero = () => {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const flags = [
     { src: "🇮🇳", position: "top-1/4 left-1/4", delay: "0s" },
     { src: "🇮🇪", position: "top-1/3 left-1/3", delay: "0.5s" },
@@ -13,11 +21,84 @@ const Hero = () => {
     { src: "🇨🇭", position: "bottom-1/2 left-1/3", delay: "3s" },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero text animation with stagger
+      gsap.from(textRef.current?.children || [], {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+      });
+
+      // Image animation
+      gsap.from(imageRef.current, {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        delay: 0.3,
+      });
+
+      // Buttons animation
+      gsap.from(buttonsRef.current?.children || [], {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+        delay: 0.8,
+      });
+
+      // Scroll indicator animation
+      gsap.from(scrollRef.current, {
+        y: -20,
+        opacity: 0,
+        duration: 1,
+        delay: 1.2,
+        ease: "power2.out",
+      });
+
+      // Continuous float animation for scroll indicator
+      gsap.to(scrollRef.current, {
+        y: 10,
+        duration: 1.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+      });
+
+      // Image rotation on hover effect
+      const imageElement = imageRef.current?.querySelector('img');
+      if (imageElement) {
+        imageElement.addEventListener('mouseenter', () => {
+          gsap.to(imageElement, {
+            scale: 1.05,
+            rotation: 5,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        });
+        imageElement.addEventListener('mouseleave', () => {
+          gsap.to(imageElement, {
+            scale: 1,
+            rotation: 0,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        });
+      }
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className='relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden'>
+    <section ref={heroRef} className='relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden'>
       <div className='container mx-auto px-6'>
         <div className='grid lg:grid-cols-2 gap-12 items-center'>
-          <div className='text-left space-y-6 animate-in fade-in slide-in-from-left duration-700'>
+          <div ref={textRef} className='text-left space-y-6'>
             <div className='inline-flex items-center gap-2 text-sm text-muted-foreground'>
              <div className="flex items-center">
   <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white">
@@ -67,7 +148,7 @@ const Hero = () => {
               global movement simple, secure, and stress-free.
             </p>
 
-            <div className='flex gap-4 pt-4'>
+            <div ref={buttonsRef} className='flex gap-4 pt-4'>
               <Button
                 size='lg'
                 className='rounded-md bg-primary hover:bg-primary/90 text-white px-8'>
@@ -83,7 +164,7 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className='relative flex items-center justify-center animate-in fade-in slide-in-from-right duration-700 delay-300'>
+          <div ref={imageRef} className='relative flex items-center justify-center'>
             <div className='relative w-[400px] h-[400px]'>
               <div className=' bg-white rounded-full flex items-center justify-center overflow-hidden outline-none ring-0 focus:ring-0 focus:outline-none'>
                 <img
@@ -114,7 +195,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className='absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 animate-bounce'>
+      <div ref={scrollRef} className='absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4'>
         <div className='w-full'>
           <svg
             viewBox='0 0 100 20'
