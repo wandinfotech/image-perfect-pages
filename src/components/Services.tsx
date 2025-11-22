@@ -49,52 +49,162 @@ const Services = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading animation
-      gsap.from(headingRef.current?.children || [], {
+      // Heading subtitle animation
+      const subtitle = headingRef.current?.querySelector('.subtitle');
+      const title = headingRef.current?.querySelector('h2');
+
+      gsap.from(subtitle, {
         scrollTrigger: {
           trigger: headingRef.current,
           start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+      });
+
+      gsap.from(title, {
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
         },
         y: 50,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
+        duration: 1,
         ease: "power3.out",
+        delay: 0.2,
       });
 
-      // Cards stagger animation
-      gsap.from(cardsRef.current?.children || [], {
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: "top 80%",
-        },
-        y: 80,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out",
-      });
-
-      // Card hover animations
+      // Enhanced cards animation with individual element animations
       const cards = cardsRef.current?.querySelectorAll('.service-card');
-      cards?.forEach((card) => {
+      cards?.forEach((card, index) => {
+        const icon = card.querySelector('.service-icon');
+        const title = card.querySelector('.service-title');
+        const description = card.querySelector('.service-description');
+        const button = card.querySelector('.service-button');
+
+        // Card entrance
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          y: 100,
+          opacity: 0,
+          scale: 0.9,
+          duration: 0.8,
+          ease: "power3.out",
+          delay: index * 0.1,
+        });
+
+        // Icon animation
+        gsap.from(icon, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          scale: 0,
+          rotation: -180,
+          opacity: 0,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+          delay: index * 0.1 + 0.3,
+        });
+
+        // Title animation
+        gsap.from(title, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          x: -30,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          delay: index * 0.1 + 0.4,
+        });
+
+        // Description animation
+        gsap.from(description, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          y: 20,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          delay: index * 0.1 + 0.5,
+        });
+
+        // Button animation
+        gsap.from(button, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          scale: 0,
+          opacity: 0,
+          duration: 0.5,
+          ease: "back.out(2)",
+          delay: index * 0.1 + 0.6,
+        });
+
+        // Card hover animations
         card.addEventListener('mouseenter', () => {
           gsap.to(card, {
-            y: -10,
-            scale: 1.02,
+            y: -15,
+            scale: 1.03,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+          gsap.to(icon, {
+            scale: 1.1,
+            rotation: 10,
             duration: 0.3,
             ease: "power2.out",
           });
         });
+
         card.addEventListener('mouseleave', () => {
           gsap.to(card, {
             y: 0,
             scale: 1,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+          gsap.to(icon, {
+            scale: 1,
+            rotation: 0,
             duration: 0.3,
             ease: "power2.out",
           });
         });
       });
+
+      // Bottom text animation
+      const bottomText = sectionRef.current?.querySelector('.bottom-text');
+      if (bottomText) {
+        gsap.from(bottomText, {
+          scrollTrigger: {
+            trigger: bottomText,
+            start: "top 90%",
+            toggleActions: "play none none reverse",
+          },
+          y: 30,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -104,7 +214,7 @@ const Services = () => {
     <section ref={sectionRef} className="py-20 bg-secondary">
       <div className="container mx-auto px-6">
         <div ref={headingRef} className="text-center mb-16 space-y-4">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+          <p className="subtitle text-sm uppercase tracking-wider text-muted-foreground font-medium">
             our services
           </p>
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground">
@@ -122,22 +232,22 @@ const Services = () => {
               }`}
             >
               <CardContent className="p-8 space-y-6">
-                <div className={`w-14 h-14 flex items-center justify-center`}>
+                <div className={`service-icon w-14 h-14 flex items-center justify-center`}>
                   <img src={service.icon} alt={service.title}  />
                 </div>
 
                 <div className="space-y-3">
-                  <h3 className={`text-xl font-bold ${service.featured ? 'text-white' : 'text-foreground'}`}>
+                  <h3 className={`service-title text-xl font-bold ${service.featured ? 'text-white' : 'text-foreground'}`}>
                     {service.title}
                   </h3>
-                  <p className={`text-sm leading-relaxed ${service.featured ? 'text-white/90' : 'text-muted-foreground'}`}>
+                  <p className={`service-description text-sm leading-relaxed ${service.featured ? 'text-white/90' : 'text-muted-foreground'}`}>
                     {service.description}
                   </p>
                 </div>
 
                 <Button
                   variant="ghost"
-                  className={`w-10 h-10 rounded-full p-0 group-hover:scale-110 transition-transform ${
+                  className={`service-button w-10 h-10 rounded-full p-0 group-hover:scale-110 transition-transform ${
                     service.featured 
                       ? 'bg-white/20 hover:bg-white/30 text-white' 
                       : 'bg-primary/10 hover:bg-primary/20 text-primary'
@@ -150,7 +260,7 @@ const Services = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="bottom-text text-center mt-12">
           <p className="text-muted-foreground">
             Need Visa & Immigration consultation?{" "}
             <a href="#contact" className="text-primary font-semibold hover:underline">
